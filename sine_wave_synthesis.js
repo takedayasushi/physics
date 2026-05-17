@@ -46,6 +46,15 @@ function draw() {
     const freq2 = parseFloat(freq2Slider.value);
     const phase2 = parseFloat(phase2Slider.value) * (Math.PI / 180);
 
+    // This block is only for the text display, not drawing
+    if (!isInterferenceAnimationRunning) {
+        if (Math.abs(freq1 - freq2) > 0 && Math.abs(freq1 - freq2) < 0.5) {
+            // beatPhenomenonDiv.style.display = 'block'; // Logic moved to button
+        } else {
+            // beatPhenomenonDiv.style.display = 'none'; // Logic moved to button
+        }
+    }
+
     // Update display values
     amp1Value.textContent = amp1.toFixed(0);
     freq1Value.textContent = freq1.toFixed(1);
@@ -104,7 +113,7 @@ let interferenceAnimationId;
 // Add event listeners to all sliders
 [amp1Slider, freq1Slider, phase1Slider, amp2Slider, freq2Slider, phase2Slider].forEach(slider => {
     slider.addEventListener('input', () => {
-        // Stop the beat animation if user interacts with sliders
+        // Stop any running animations if user interacts with sliders
         if (isBeatAnimationRunning) {
             cancelAnimationFrame(beatAnimationId);
             isBeatAnimationRunning = false;
@@ -114,11 +123,20 @@ let interferenceAnimationId;
             cancelAnimationFrame(interferenceAnimationId);
             isInterferenceAnimationRunning = false;
             showInterferenceAnimationButton.textContent = '「干渉」をアニメーションで見てみよう';
+            interferencePhenomenonDiv.style.display = 'none'; // Hide text when user takes over
         }
     });
 });
 
 showBeatAnimationButton.addEventListener('click', () => {
+    // Stop interference animation if it's running
+    if (isInterferenceAnimationRunning) {
+        cancelAnimationFrame(interferenceAnimationId);
+        isInterferenceAnimationRunning = false;
+        showInterferenceAnimationButton.textContent = '「干渉」をアニメーションで見てみよう';
+        interferencePhenomenonDiv.style.display = 'none';
+    }
+
     if (isBeatAnimationRunning) {
         // Stop the animation
         cancelAnimationFrame(beatAnimationId);
@@ -151,6 +169,13 @@ showBeatAnimationButton.addEventListener('click', () => {
 });
 
 showInterferenceAnimationButton.addEventListener('click', () => {
+    // Stop beat animation if it's running
+    if (isBeatAnimationRunning) {
+        cancelAnimationFrame(beatAnimationId);
+        isBeatAnimationRunning = false;
+        showBeatAnimationButton.textContent = '「うなり」をアニメーションで見てみよう';
+    }
+
     if (isInterferenceAnimationRunning) {
         cancelAnimationFrame(interferenceAnimationId);
         isInterferenceAnimationRunning = false;
