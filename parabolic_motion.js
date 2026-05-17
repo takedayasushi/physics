@@ -12,37 +12,72 @@ const ctx = canvas.getContext('2d');
 let animationFrameId;
 let startTime;
 
-function drawParabola(v0, angleRad, g) {
+function animate(v0, angleRad, g, start) {
     const scale = 5; // 1m = 5 pixels
-    const dt = 0.1;  // time step
+    const originX = 0;
+    const originY = canvas.height;
+
+    let currentTime = (Date.now() - start) / 1000; // time in seconds
+
+    // Calculate current position
+    let x = v0 * Math.cos(angleRad) * currentTime;
+    let y = v0 * Math.sin(angleRad) * currentTime - 0.5 * g * currentTime * currentTime;
+
+    // Clear canvas for this frame
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw the trajectory up to the current point
+    ctx.beginPath();
+    ctx.strokeStyle = 'blue';
+    ctx.lineWidth = 2;
+    ctx.moveTo(originX, originY);
+    for (let t = 0; t <= currentTime; t += 0.01) {
+        let pathX = v0 * Math.cos(angleRad) * t;
+        let pathY = v0 * Math.sin(angleRad) * t - 0.5 * g * t * t;
+        ctx.lineTo(originX + pathX * scale, originY - pathY * scale);
+    }
+    ctx.stroke();
+
+    // Draw the projectile
+    ctx.beginPath();
+    ctx.arc(originX + x * scale, originY - y * scale, 5, 0, 2 * Math.PI);
+    ctx.fillStyle = 'red';
+    ctx.fill();
+
+    // Continue animation if projectile is still in the air and within canvas width
+    if (y >= 0 && x * scale <= canvas.width) {
+        animationFrameId = requestAnimationFrame(() => animate(v0, angleRad, g, start));
+    } else {
+        // Animation finished, draw the full static parabola for clarity
+        drawFullParabola(v0, angleRad, g);
+    }
+}
+
+function drawFullParabola(v0, angleRad, g) {
+    const scale = 5;
+    const dt = 0.01;
+    const originX = 0;
+    const originY = canvas.height;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.beginPath();
     ctx.strokeStyle = 'blue';
     ctx.lineWidth = 2;
-
-    let x = 0;
-    let y = 0;
-    let t = 0;
-
-    // Origin at bottom-left for physics simulation
-    const originX = 0;
-    const originY = canvas.height;
-
     ctx.moveTo(originX, originY);
 
-    while (y >= 0) {
+    let x, y;
+    let t = 0;
+    do {
         x = v0 * Math.cos(angleRad) * t;
         y = v0 * Math.sin(angleRad) * t - 0.5 * g * t * t;
-
-        // Draw only if within canvas bounds and y is not negative (below ground)
-        if (x * scale <= canvas.width && y * scale >= 0) {
-            ctx.lineTo(originX + x * scale, originY - y * scale); // Invert y-axis for canvas
+        if (x * scale <= canvas.width) {
+            ctx.lineTo(originX + x * scale, originY - y * scale);
         }
         t += dt;
-    }
+    } while (y >= 0);
     ctx.stroke();
 }
+
 
 function calculateAndDisplayResults(v0, angleRad, g) {
     const flightTime = (2 * v0 * Math.sin(angleRad)) / g;
@@ -70,12 +105,12 @@ function startSimulation() {
 
     const angleRad = angleDeg * (Math.PI / 180);
 
-    // Initial draw and calculation
-    drawParabola(v0, angleRad, g);
+    // Calculate and display final results immediately
     calculateAndDisplayResults(v0, angleRad, g);
-
-    // No real-time animation for now, just static draw
-    // If real-time animation is needed, a separate animate function would be called here.
+    
+    // Start the animation
+    startTime = Date.now();
+    animate(v0, angleRad, g, startTime);
 }
 
 function resetSimulation() {
@@ -86,7 +121,7 @@ function resetSimulation() {
     rangeSpan.textContent = '0';
     maxHeightSpan.textContent = '0';
     flightTimeSpan.textContent = '0';
-    // Reset input values to default or clear them
+    // Reset input values to default
     initialVelocityInput.value = '50';
     angleInput.value = '45';
     gravityInput.value = '9.8';
