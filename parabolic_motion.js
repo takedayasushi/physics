@@ -12,8 +12,17 @@ const ctx = canvas.getContext('2d');
 let animationFrameId;
 let startTime;
 
-function animate(v0, angleRad, g, start) {
-    const scale = 5; // 1m = 5 pixels
+function getScale(range) {
+    // Calculate scale to fit the entire trajectory within the canvas width
+    // Add a small margin (e.g., 20 pixels)
+    const margin = 20;
+    if (range > 0 && (range * 5) > (canvas.width - margin)) {
+        return (canvas.width - margin) / range;
+    }
+    return 5; // Default scale if trajectory is small
+}
+
+function animate(v0, angleRad, g, start, scale) {
     const originX = 0;
     const originY = canvas.height;
 
@@ -44,17 +53,16 @@ function animate(v0, angleRad, g, start) {
     ctx.fillStyle = 'red';
     ctx.fill();
 
-    // Continue animation if projectile is still in the air and within canvas width
-    if (y >= 0 && x * scale <= canvas.width) {
-        animationFrameId = requestAnimationFrame(() => animate(v0, angleRad, g, start));
+    // Continue animation if projectile is still in the air
+    if (y >= 0) {
+        animationFrameId = requestAnimationFrame(() => animate(v0, angleRad, g, start, scale));
     } else {
         // Animation finished, draw the full static parabola for clarity
-        drawFullParabola(v0, angleRad, g);
+        drawFullParabola(v0, angleRad, g, scale);
     }
 }
 
-function drawFullParabola(v0, angleRad, g) {
-    const scale = 5;
+function drawFullParabola(v0, angleRad, g, scale) {
     const dt = 0.01;
     const originX = 0;
     const originY = canvas.height;
@@ -70,9 +78,7 @@ function drawFullParabola(v0, angleRad, g) {
     do {
         x = v0 * Math.cos(angleRad) * t;
         y = v0 * Math.sin(angleRad) * t - 0.5 * g * t * t;
-        if (x * scale <= canvas.width) {
-            ctx.lineTo(originX + x * scale, originY - y * scale);
-        }
+        ctx.lineTo(originX + x * scale, originY - y * scale);
         t += dt;
     } while (y >= 0);
     ctx.stroke();
@@ -87,12 +93,17 @@ function calculateAndDisplayResults(v0, angleRad, g) {
     rangeSpan.textContent = range.toFixed(2);
     maxHeightSpan.textContent = maxHeight.toFixed(2);
     flightTimeSpan.textContent = flightTime.toFixed(2);
+
+    return { range }; // Return range for scaling
 }
 
 function startSimulation() {
     if (animationFrameId) {
         cancelAnimationFrame(animationFrameId);
     }
+
+    // Update canvas drawing buffer size to match its display size
+    canvas.width = canvas.clientWidth;
 
     const v0 = parseFloat(initialVelocityInput.value);
     const angleDeg = parseFloat(angleInput.value);
@@ -106,11 +117,14 @@ function startSimulation() {
     const angleRad = angleDeg * (Math.PI / 180);
 
     // Calculate and display final results immediately
-    calculateAndDisplayResults(v0, angleRad, g);
+    const { range } = calculateAndDisplayResults(v0, angleRad, g);
     
+    // Get the dynamic scale
+    const scale = getScale(range);
+
     // Start the animation
     startTime = Date.now();
-    animate(v0, angleRad, g, startTime);
+    animate(v0, angleRad, g, startTime, scale);
 }
 
 function resetSimulation() {

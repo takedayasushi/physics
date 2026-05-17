@@ -114,4 +114,6 @@ canvas {
     border: 1px solid #333;
     background-color: #e9ecef;
     margin-top: 20px;
+    width: 800px;
+    max-width: 100%; /* Add this line */
 }
