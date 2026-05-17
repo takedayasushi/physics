@@ -134,8 +134,11 @@ function animate() {
 // Mouse and Touch events for dragging the magnet
 function startDrag(clientX, clientY) {
     const rect = canvas.getBoundingClientRect();
-    const x = clientX - rect.left;
-    const y = clientY - rect.top;
+    const scaleX = canvas.width / rect.width;    // 実際のキャンバスのサイズと画面上の表示サイズの比率（X軸）
+    const scaleY = canvas.height / rect.height;  // 実際のキャンバスのサイズと画面上の表示サイズの比率（Y軸）
+
+    const x = (clientX - rect.left) * scaleX;
+    const y = (clientY - rect.top) * scaleY;
 
     if (
         x > magnet.x - magnet.width / 2 &&
@@ -150,8 +153,11 @@ function startDrag(clientX, clientY) {
 function moveDrag(clientX, clientY) {
     if (magnet.isDragging) {
         const rect = canvas.getBoundingClientRect();
-        magnet.x = clientX - rect.left;
-        magnet.y = clientY - rect.top;
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+
+        magnet.x = (clientX - rect.left) * scaleX;
+        magnet.y = (clientY - rect.top) * scaleY;
     }
 }
 
