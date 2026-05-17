@@ -3,31 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>放物運動シミュレーション</title>
+    <title>物理の世界へようこそ</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>放物運動シミュレーション</h1>
-    <div class="controls">
-        <label for="initial_velocity">初速度 (m/s):</label>
-        <input type="number" id="initial_velocity" value="50" step="1">
-        
-        <label for="angle">角度 (度):</label>
-        <input type="number" id="angle" value="45" step="1">
+    <div class="container">
+        <header>
+            <h1>物理の世界へようこそ</h1>
+            <p>なぜ私たちは物理を学ぶのでしょうか？</p>
+        </header>
 
-        <label for="gravity">重力加速度 (m/s²):</label>
-        <input type="number" id="gravity" value="9.8" step="0.1">
+        <section class="intro">
+            <h2>世界を記述する「言語」としての物理学</h2>
+            <p>物理学は、単なる数式や法則の暗記ではありません。それは、私たちが住むこの世界の根本的なルールを理解し、未来を予測するための「言語」です。りんごが木から落ちる理由から、宇宙の果てで起こる壮大な現象まで、すべてを同じ言葉で語ることができます。</p>
+            <p>このサイトでは、高校物理の基本的な概念を通じて、その面白さと、物事を論理的に考え、問題を解決する力を養うことの重要性を探求します。</p>
+        </section>
 
-        <button id="start_simulation">シミュレーション開始</button>
-        <button id="reset_simulation">リセット</button>
+        <nav class="menu">
+            <h2>シミュレーションメニュー</h2>
+            <ul>
+                <li><a href="parabolic_motion.html">放物運動のシミュレーション</a></li>
+            </ul>
+        </nav>
+
+        <footer>
+            <p>&copy; 2026 Physics App by Kuro</p>
+        </footer>
     </div>
-    <div class="results">
-        <p>到達距離: <span id="range">0</span> m</p>
-        <p>最高到達点: <span id="max_height">0</span> m</p>
-        <p>滞空時間: <span id="flight_time">0</span> s</p>
-    </div>
-    <canvas id="simulation_canvas" width="800" height="400"></canvas>
-
-    <script src="script.js"></script>
 </body>
 </html>
