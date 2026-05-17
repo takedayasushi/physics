@@ -16,6 +16,9 @@ const canvas = document.getElementById('wave-canvas');
 const ctx = canvas.getContext('2d');
 const beatPhenomenonDiv = document.getElementById('beat-phenomenon');
 const showBeatAnimationButton = document.getElementById('show-beat-animation');
+const interferencePhenomenonDiv = document.getElementById('interference-phenomenon');
+const interferenceText = document.getElementById('interference-text');
+const showInterferenceAnimationButton = document.getElementById('show-interference-animation');
 
 function draw() {
     // Update canvas drawing buffer size to match its display size
@@ -95,6 +98,8 @@ function draw() {
 
 let isBeatAnimationRunning = false;
 let beatAnimationId;
+let isInterferenceAnimationRunning = false;
+let interferenceAnimationId;
 
 // Add event listeners to all sliders
 [amp1Slider, freq1Slider, phase1Slider, amp2Slider, freq2Slider, phase2Slider].forEach(slider => {
@@ -104,6 +109,11 @@ let beatAnimationId;
             cancelAnimationFrame(beatAnimationId);
             isBeatAnimationRunning = false;
             showBeatAnimationButton.textContent = '「うなり」をアニメーションで見てみよう';
+        }
+        if (isInterferenceAnimationRunning) {
+            cancelAnimationFrame(interferenceAnimationId);
+            isInterferenceAnimationRunning = false;
+            showInterferenceAnimationButton.textContent = '「干渉」をアニメーションで見てみよう';
         }
     });
 });
@@ -137,6 +147,50 @@ showBeatAnimationButton.addEventListener('click', () => {
             }
         };
         animateBeat();
+    }
+});
+
+showInterferenceAnimationButton.addEventListener('click', () => {
+    if (isInterferenceAnimationRunning) {
+        cancelAnimationFrame(interferenceAnimationId);
+        isInterferenceAnimationRunning = false;
+        showInterferenceAnimationButton.textContent = '「干渉」をアニメーションで見てみよう';
+        interferencePhenomenonDiv.style.display = 'none';
+    } else {
+        isInterferenceAnimationRunning = true;
+        showInterferenceAnimationButton.textContent = 'アニメーションを停止';
+        interferencePhenomenonDiv.style.display = 'block';
+
+        // Set parameters for interference
+        amp1Slider.value = 50;
+        freq1Slider.value = 2.0;
+        amp2Slider.value = 50;
+        freq2Slider.value = 2.0;
+        phase1Slider.value = 0;
+
+        // Animate phase of wave 2 from 0 to 360
+        let startTime = Date.now();
+        const duration = 5000; // 5 seconds for one cycle
+
+        const animateInterference = () => {
+            let elapsedTime = Date.now() - startTime;
+            let progress = (elapsedTime / duration) % 1;
+            let phaseDeg = 360 * progress;
+            phase2Slider.value = phaseDeg;
+
+            if (Math.abs(phaseDeg - 0) < 5 || Math.abs(phaseDeg - 360) < 5) {
+                interferenceText.textContent = '位相が同じ（0度）なので、山と山が重なり、振幅が2倍になる「強め合い」が起きています。';
+            } else if (Math.abs(phaseDeg - 180) < 5) {
+                interferenceText.textContent = '位相が180度ずれているので、山と谷が重なり、打ち消し合う「弱め合い」が起きています。';
+            } else {
+                interferenceText.textContent = '2つの波の位相をずらし、干渉の様子を観察しています...';
+            }
+
+            if (isInterferenceAnimationRunning) {
+                interferenceAnimationId = requestAnimationFrame(animateInterference);
+            }
+        };
+        animateInterference();
     }
 });
 
