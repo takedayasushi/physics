@@ -131,40 +131,53 @@ function animate() {
     requestAnimationFrame(animate);
 }
 
-// Mouse events for dragging the magnet
-canvas.addEventListener('mousedown', (e) => {
+// Mouse and Touch events for dragging the magnet
+function startDrag(clientX, clientY) {
     const rect = canvas.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
 
     if (
-        mouseX > magnet.x - magnet.width / 2 &&
-        mouseX < magnet.x + magnet.width / 2 &&
-        mouseY > magnet.y - magnet.height / 2 &&
-        mouseY < magnet.y + magnet.height / 2
+        x > magnet.x - magnet.width / 2 &&
+        x < magnet.x + magnet.width / 2 &&
+        y > magnet.y - magnet.height / 2 &&
+        y < magnet.y + magnet.height / 2
     ) {
         magnet.isDragging = true;
     }
-});
+}
 
-canvas.addEventListener('mousemove', (e) => {
+function moveDrag(clientX, clientY) {
     if (magnet.isDragging) {
         const rect = canvas.getBoundingClientRect();
-        magnet.x = e.clientX - rect.left;
-        magnet.y = e.clientY - rect.top;
+        magnet.x = clientX - rect.left;
+        magnet.y = clientY - rect.top;
     }
-});
+}
 
-canvas.addEventListener('mouseup', () => {
+function stopDrag() {
     magnet.isDragging = false;
     fluxChange = 0; // Reset flux change when magnet is released
     coil.bulbPower = 0; // Turn off bulb
-});
+}
 
-canvas.addEventListener('mouseleave', () => {
-    magnet.isDragging = false;
-    fluxChange = 0; // Reset flux change when magnet leaves canvas
-    coil.bulbPower = 0; // Turn off bulb
-});
+// Mouse events
+canvas.addEventListener('mousedown', (e) => startDrag(e.clientX, e.clientY));
+canvas.addEventListener('mousemove', (e) => moveDrag(e.clientX, e.clientY));
+canvas.addEventListener('mouseup', stopDrag);
+canvas.addEventListener('mouseleave', stopDrag);
+
+// Touch events (for smartphones/tablets)
+canvas.addEventListener('touchstart', (e) => {
+    e.preventDefault(); // Prevent scrolling
+    startDrag(e.touches[0].clientX, e.touches[0].clientY);
+}, { passive: false });
+
+canvas.addEventListener('touchmove', (e) => {
+    e.preventDefault(); // Prevent scrolling
+    moveDrag(e.touches[0].clientX, e.touches[0].clientY);
+}, { passive: false });
+
+canvas.addEventListener('touchend', stopDrag);
 
 animate();

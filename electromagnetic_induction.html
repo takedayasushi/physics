@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Electromagnetic Induction</title>
+    <title>ピカピカ電磁誘導シミュレーション</title>
     <link rel="stylesheet" href="style.css">
     <style>
         body {
@@ -49,18 +49,18 @@
 <body>
     <header>
         <nav>
-            <a href="index.html">Home</a>
+            <p><a href="index.html">ホームに戻る</a></p>
         </nav>
     </header>
-    <h1>Electromagnetic Induction Simulation</h1>
+    <h1>ピカピカ電磁誘導シミュレーション</h1>
     <div id="explanation">
-        <h2>What is Electromagnetic Induction?</h2>
-        <p>Electromagnetic induction is a phenomenon where an electromotive force (EMF) is generated across an electrical conductor in a changing magnetic field. This principle, discovered by Michael Faraday, is fundamental to how generators, transformers, and many other electrical devices work.</p>
-        <p>In this simulation, you will observe how moving a bar magnet near a coil of wire induces an electric current, causing a light bulb to glow. The faster the magnet moves, the greater the change in magnetic flux through the coil, resulting in a larger induced EMF and a brighter bulb.</p>
-        <p>This is described by <strong>Faraday's Law of Induction</strong>: <br> EMF = -N * (dΦ/dt), <br> where N is the number of turns in the coil, and dΦ/dt is the rate of change of magnetic flux (Φ) through the coil.</p>
+        <h2>電磁誘導とは？</h2>
+        <p>電磁誘導（でんじゆうどう）は、コイルなどを貫く磁界（磁力線）が変化したときに、電圧（誘導起電力）が発生する現象です。マイケル・ファラデーによって発見され、発電機などの仕組みの基礎となっています。</p>
+        <p>このシミュレーションでは、コイルの近くで棒磁石をマウスやタッチでドラッグして動かすと、電流が流れて豆電球が光ります。磁石を速く動かすほど、磁界の変化が大きくなり、強い電圧が発生して豆電球がより明るく光る様子を観察してみましょう。</p>
+        <p>これは<strong>ファラデーの電磁誘導の法則</strong>として知られており、次の式で表されます：<br> 電圧(V) = -N × (ΔΦ/Δt) <br> （N はコイルの巻き数、ΔΦ/Δt は磁束の変化する速さ）</p>
     </div>
     <canvas id="inductionCanvas" width="800" height="400"></canvas>
-    <div class="bulb-indicator">Bulb Brightness: <span id="bulbBrightness">0%</span></div>
+    <div class="bulb-indicator">豆電球の明るさ: <span id="bulbBrightness">0%</span></div>
     <script src="electromagnetic_induction.js"></script>
 </body>
 </html>
