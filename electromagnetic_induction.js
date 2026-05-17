@@ -7,17 +7,17 @@ const bulbBrightnessSpan = document.getElementById('bulbBrightness');
 let magnet = {
     x: canvas.width / 2, 
     y: canvas.height / 2,
-    width: 80,
-    height: 30,
+    width: 160,
+    height: 60,
     pole: 'N', // 'N' for North, 'S' for South - conceptual
     isDragging: false
 };
 
 let coil = {
-    x: canvas.width / 2 - 100, 
-    y: canvas.height / 2 - 50,
-    width: 200,
-    height: 100,
+    x: canvas.width / 2 - 150, 
+    y: canvas.height / 2 - 75,
+    width: 300,
+    height: 150,
     turns: 10,
     wireColor: '#663300',
     bulbPower: 0 // 0-100, simulates brightness
@@ -55,7 +55,7 @@ function drawMagnet() {
     ctx.strokeRect(magnet.x - magnet.width / 2, magnet.y - magnet.height / 2, magnet.width, magnet.height);
 
     ctx.fillStyle = 'white';
-    ctx.font = '16px Arial';
+    ctx.font = '24px Arial';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText('N', magnet.x - magnet.width / 4, magnet.y);
@@ -91,16 +91,40 @@ function calculateMagneticFluxChange() {
 }
 
 function drawBulb() {
-    const bulbRadius = 15;
+    const bulbRadius = 30;
     const bulbX = coil.x + coil.width / 2;
-    const bulbY = coil.y - bulbRadius - 20;
+    const bulbY = coil.y - bulbRadius - 30;
+
+    // Simulate glow based on bulbPower (Draw glow BEFORE bulb so it surrounds it nicely)
+    if (coil.bulbPower > 0) {
+        const glowIntensity = coil.bulbPower / 100; // 0 to 1
+        const maxGlowRadius = bulbRadius + (glowIntensity * 150); // Large glowing aura
+
+        const gradient = ctx.createRadialGradient(bulbX, bulbY, bulbRadius, bulbX, bulbY, maxGlowRadius);
+        gradient.addColorStop(0, `rgba(255, 255, 0, ${glowIntensity * 0.9})`); // Bright center
+        gradient.addColorStop(1, 'rgba(255, 255, 0, 0)'); // Fades out
+
+        ctx.beginPath();
+        ctx.arc(bulbX, bulbY, maxGlowRadius, 0, Math.PI * 2);
+        ctx.fillStyle = gradient;
+        ctx.fill();
+    }
 
     // Draw bulb base
     ctx.beginPath();
     ctx.arc(bulbX, bulbY, bulbRadius, 0, Math.PI * 2);
-    ctx.fillStyle = 'lightgray';
+    
+    // Bulb glass color changes when lit
+    if (coil.bulbPower > 0) {
+        const glowIntensity = coil.bulbPower / 100;
+        ctx.fillStyle = `rgba(255, 255, ${200 - glowIntensity * 200}, 1)`; // Turn yellow/white
+    } else {
+        ctx.fillStyle = 'rgba(240, 240, 240, 0.8)'; // Off
+    }
+    
     ctx.fill();
-    ctx.strokeStyle = 'black';
+    ctx.strokeStyle = '#333';
+    ctx.lineWidth = 2;
     ctx.stroke();
 
     // Draw filament (simple cross)
@@ -109,17 +133,11 @@ function drawBulb() {
     ctx.lineTo(bulbX + bulbRadius / 2, bulbY);
     ctx.moveTo(bulbX, bulbY - bulbRadius / 2);
     ctx.lineTo(bulbX, bulbY + bulbRadius / 2);
-    ctx.strokeStyle = 'gray';
+    
+    // Filament brightens
+    ctx.strokeStyle = coil.bulbPower > 10 ? '#fff' : '#888';
+    ctx.lineWidth = 3;
     ctx.stroke();
-
-    // Simulate glow based on bulbPower
-    if (coil.bulbPower > 0) {
-        const glowIntensity = coil.bulbPower / 100; // 0 to 1
-        ctx.beginPath();
-        ctx.arc(bulbX, bulbY, bulbRadius + (glowIntensity * 5), 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, 255, 0, ${glowIntensity * 0.5})`; // Yellow glow
-        ctx.fill();
-    }
 }
 
 function animate() {
