@@ -15,6 +15,7 @@ const phase2Value = document.getElementById('phase2-value');
 const canvas = document.getElementById('wave-canvas');
 const ctx = canvas.getContext('2d');
 const beatPhenomenonDiv = document.getElementById('beat-phenomenon');
+const showBeatAnimationButton = document.getElementById('show-beat-animation');
 
 function draw() {
     // Update canvas drawing buffer size to match its display size
@@ -41,13 +42,6 @@ function draw() {
     const amp2 = parseFloat(amp2Slider.value);
     const freq2 = parseFloat(freq2Slider.value);
     const phase2 = parseFloat(phase2Slider.value) * (Math.PI / 180);
-
-    // Check for beat phenomenon
-    if (Math.abs(freq1 - freq2) > 0 && Math.abs(freq1 - freq2) < 0.5) {
-        beatPhenomenonDiv.style.display = 'block';
-    } else {
-        beatPhenomenonDiv.style.display = 'none';
-    }
 
     // Update display values
     amp1Value.textContent = amp1.toFixed(0);
@@ -104,6 +98,21 @@ function draw() {
     slider.addEventListener('input', () => {
         // No need to call draw() here, as requestAnimationFrame handles the continuous loop
     });
+});
+
+showBeatAnimationButton.addEventListener('click', () => {
+    // Show the explanation
+    beatPhenomenonDiv.style.display = 'block';
+
+    // Set parameters for a clear beat visualization
+    amp1Slider.value = 50;
+    freq1Slider.value = 1.0;
+    phase1Slider.value = 0;
+    amp2Slider.value = 50;
+    freq2Slider.value = 1.2;
+    phase2Slider.value = 0;
+
+    // The draw loop will automatically pick up the new values and animate
 });
 
 // Initial draw
