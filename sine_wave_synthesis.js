@@ -14,6 +14,7 @@ const phase2Value = document.getElementById('phase2-value');
 
 const canvas = document.getElementById('wave-canvas');
 const ctx = canvas.getContext('2d');
+const beatPhenomenonDiv = document.getElementById('beat-phenomenon');
 
 function draw() {
     // Update canvas drawing buffer size to match its display size
@@ -40,6 +41,13 @@ function draw() {
     const amp2 = parseFloat(amp2Slider.value);
     const freq2 = parseFloat(freq2Slider.value);
     const phase2 = parseFloat(phase2Slider.value) * (Math.PI / 180);
+
+    // Check for beat phenomenon
+    if (Math.abs(freq1 - freq2) > 0 && Math.abs(freq1 - freq2) < 0.5) {
+        beatPhenomenonDiv.style.display = 'block';
+    } else {
+        beatPhenomenonDiv.style.display = 'none';
+    }
 
     // Update display values
     amp1Value.textContent = amp1.toFixed(0);

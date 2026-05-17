@@ -46,6 +46,18 @@
         </div>
 
         <canvas id="wave-canvas" width="800" height="400"></canvas>
+
+        <div class="explanation">
+            <h3>学べる物理現象</h3>
+            <div class="principle">
+                <h4>重ね合わせの原理</h4>
+                <p>合成波（紫）は、波1（赤）と波2（青）の各点の変位（yの値）を単純に足し合わせたものです。このシミュレーションで、波がどのように干渉し合うかを視覚的に確認できます。</p>
+            </div>
+            <div id="beat-phenomenon" class="principle" style="display: none;">
+                <h4>うなり</h4>
+                <p>2つの波の周波数が近いと、合成波の振幅が周期的に大きく変化する「うなり」という現象が観察できます。うなりの周波数（1秒あたりの強弱の回数）は、2つの周波数の差の絶対値 <strong>|f1 - f2|</strong> になります。</p>
+            </div>
+        </div>
         
     </div>
     <script src="sine_wave_synthesis.js"></script>
