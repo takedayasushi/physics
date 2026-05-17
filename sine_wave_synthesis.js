@@ -93,39 +93,51 @@ function draw() {
     requestAnimationFrame(draw);
 }
 
+let isBeatAnimationRunning = false;
+let beatAnimationId;
+
 // Add event listeners to all sliders
 [amp1Slider, freq1Slider, phase1Slider, amp2Slider, freq2Slider, phase2Slider].forEach(slider => {
     slider.addEventListener('input', () => {
-        // No need to call draw() here, as requestAnimationFrame handles the continuous loop
+        // Stop the beat animation if user interacts with sliders
+        if (isBeatAnimationRunning) {
+            cancelAnimationFrame(beatAnimationId);
+            isBeatAnimationRunning = false;
+            showBeatAnimationButton.textContent = '「うなり」をアニメーションで見てみよう';
+        }
     });
 });
 
-let beatAnimationId;
-
 showBeatAnimationButton.addEventListener('click', () => {
-    // Stop any ongoing animation
-    if (beatAnimationId) {
+    if (isBeatAnimationRunning) {
+        // Stop the animation
         cancelAnimationFrame(beatAnimationId);
+        isBeatAnimationRunning = false;
+        showBeatAnimationButton.textContent = '「うなり」をアニメーションで見てみよう';
+    } else {
+        // Start the animation
+        isBeatAnimationRunning = true;
+        showBeatAnimationButton.textContent = 'アニメーションを停止';
+        beatPhenomenonDiv.style.display = 'block';
+
+        // Set parameters for a clear beat visualization
+        amp1Slider.value = 50;
+        freq1Slider.value = 4.0;
+        amp2Slider.value = 50;
+        freq2Slider.value = 4.2;
+
+        // Animate the phase shift to represent time passing
+        let startTime = Date.now();
+        const animateBeat = () => {
+            let elapsedTime = (Date.now() - startTime) * 0.1; // Control speed
+            phase1Slider.value = elapsedTime % 360;
+            phase2Slider.value = elapsedTime % 360;
+            if (isBeatAnimationRunning) {
+                beatAnimationId = requestAnimationFrame(animateBeat);
+            }
+        };
+        animateBeat();
     }
-
-    // Show the explanation
-    beatPhenomenonDiv.style.display = 'block';
-
-    // Set parameters for a clear beat visualization
-    amp1Slider.value = 50;
-    freq1Slider.value = 1.0;
-    amp2Slider.value = 50;
-    freq2Slider.value = 1.2;
-
-    // Animate the phase shift
-    let phase = 0;
-    const animateBeat = () => {
-        phase = (phase + 1) % 360;
-        phase1Slider.value = phase;
-        phase2Slider.value = phase;
-        beatAnimationId = requestAnimationFrame(animateBeat);
-    };
-    animateBeat();
 });
 
 // Initial draw
