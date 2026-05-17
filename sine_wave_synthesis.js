@@ -100,19 +100,32 @@ function draw() {
     });
 });
 
+let beatAnimationId;
+
 showBeatAnimationButton.addEventListener('click', () => {
+    // Stop any ongoing animation
+    if (beatAnimationId) {
+        cancelAnimationFrame(beatAnimationId);
+    }
+
     // Show the explanation
     beatPhenomenonDiv.style.display = 'block';
 
     // Set parameters for a clear beat visualization
     amp1Slider.value = 50;
     freq1Slider.value = 1.0;
-    phase1Slider.value = 0;
     amp2Slider.value = 50;
     freq2Slider.value = 1.2;
-    phase2Slider.value = 0;
 
-    // The draw loop will automatically pick up the new values and animate
+    // Animate the phase shift
+    let phase = 0;
+    const animateBeat = () => {
+        phase = (phase + 1) % 360;
+        phase1Slider.value = phase;
+        phase2Slider.value = phase;
+        beatAnimationId = requestAnimationFrame(animateBeat);
+    };
+    animateBeat();
 });
 
 // Initial draw
